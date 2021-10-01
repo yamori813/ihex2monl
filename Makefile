@@ -1,4 +1,4 @@
-# Makefile for ihex2mon
+# Makefile for ihex2monl
 
 CFLAGS=-lm
 
