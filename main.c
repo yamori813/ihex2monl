@@ -39,6 +39,7 @@ int carrier_low;
 char *format;
 double time;
 int stop_bit;
+int intelhex;
 
 int main(int argc, char *argv[])
 {
@@ -56,6 +57,7 @@ int main(int argc, char *argv[])
     carrier_low = 1200;
     stop_bit = 3;
     format = NULL;
+    intelhex = 0;
 
     /* option analysis */
 
@@ -85,7 +87,8 @@ int main(int argc, char *argv[])
 	    printf("cannot open %s\n", argv[argc - 2]);
 	    exit(1);
 	}
-        readihex(fp_in);
+        if (intelhex)
+            readihex(fp_in);
     }
 
     /* output file */
@@ -137,8 +140,10 @@ int main(int argc, char *argv[])
 	    break;
 	  case 'd':
 	    for (j = 0; byte == 0 || j < byte; j++) {
-//		c = fgetc(fp_in);
-		c = getihex();
+		if (intelhex)
+		    c = getihex();
+		else
+		    c = fgetc(fp_in);
 		if (c == EOF) {
 		    break;
 		}
@@ -303,6 +308,10 @@ int option(int argc, char *argv[])
 		exit(1);
 	    }
 	}
+
+	if (strcmp(argv[i], "-i") == 0) {
+             intelhex = 1;
+        }
     }
 
     if (format == NULL) {
