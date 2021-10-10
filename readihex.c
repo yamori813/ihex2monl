@@ -70,7 +70,7 @@ int readihex(FILE *fp){
 		}
 	} while (r.record_type != EOF_RECORD);
 
-	printf("Start %04x size %d\n", start, size);
+	printf("Start: %04x Size: %d\n", start, size);
 
 	return EXIT_SUCCESS;
 }
