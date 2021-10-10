@@ -69,32 +69,8 @@ int readihex(FILE *fp){
 #endif
 		}
 	} while (r.record_type != EOF_RECORD);
-/*
-int i;
-unsigned char sam = 0;
 
-printf("3a ");
-printf("%02x ", start >> 8);
-sam += start >> 8;
-printf("%02x ", start & 0xff);
-sam += start & 8;
-sam = 0x100 - sam;
-printf("%02x\n", sam);
-
-sam = 0;
-printf("3a ");
-printf("%02x ", size);
-sam += size;
-for(i = 0; i < size; ++i) {
-printf("%02x ", mem[i]);
-sam += mem[i];
-}
-sam = 0x100 - sam;
-printf("%02x\n", sam);
-
-printf("3a ");
-printf("00 00\n");
-*/
+	printf("Start %04x size %d\n", start, size);
 
 	return EXIT_SUCCESS;
 }
