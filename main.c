@@ -28,6 +28,9 @@ void fput4(int, FILE *);
 void readihex(FILE *);
 int getihex();
 
+/* file type */
+int cmtfile;
+
 /* wav file parameter */
 int sampling_rate;
 int quantization_bit;
@@ -58,6 +61,7 @@ int main(int argc, char *argv[])
     stop_bit = 3;
     format = NULL;
     intelhex = 0;
+    cmtfile = 0;
 
     /* option analysis */
 
@@ -71,6 +75,7 @@ int main(int argc, char *argv[])
 	printf(" -r sampling-rate\n");
 	printf(" -s stop-bits\n");
 	printf(" -w lower-carrier-wave\n");
+	printf(" -C cmt file output\n");
 	printf("default: -b %d -c %d -f \"%s\" -q %d -r %d -s %d -w %d\n",
 	       baud_rate, nchannel, FORMAT_DEFAULT, quantization_bit,
 	       sampling_rate, stop_bit, carrier_low);
@@ -106,7 +111,8 @@ int main(int argc, char *argv[])
     /* make wav data */
 
     for (i = 0; i < 44; i++) {
-	fputc(0, fp_out);
+	if (!cmtfile)
+	    fputc(0, fp_out);
     }
 
     time = 0;
@@ -133,10 +139,12 @@ int main(int argc, char *argv[])
 //	    if (size != 0) {
 //		size += header(0.05, fp_out);
 //	    }
-	    size += blank(length, fp_out);
+	    if (!cmtfile)
+		size += blank(length, fp_out);
 	    break;
 	  case 'h':
-	    size += header(length, fp_out);
+	    if (!cmtfile)
+		size += header(length, fp_out);
 	    break;
 	  case 'd':
 	    for (j = 0; byte == 0 || j < byte; j++) {
@@ -147,14 +155,18 @@ int main(int argc, char *argv[])
 		if (c == EOF) {
 		    break;
 		}
-		size += dataout(c, fp_out);
+		if (cmtfile)
+		    fputc(c, fp_out);
+		else
+		    size += dataout(c, fp_out);
 	    }
 	    break;
 	  default:
 	    break;
 	}
     }
-    wav_head(size, fp_out);
+    if (!cmtfile)
+	wav_head(size, fp_out);
 
 //    fclose(fp_in);
     fclose(fp_out);
@@ -311,6 +323,10 @@ int option(int argc, char *argv[])
 
 	if (strcmp(argv[i], "-i") == 0) {
              intelhex = 1;
+        }
+
+	if (strcmp(argv[i], "-C") == 0) {
+             cmtfile = 1;
         }
     }
 
